@@ -18,5 +18,6 @@ object Datax {
     val helloWorldActor = actorSystem.actorOf(Props[HelloWorldActor], name = "hello_world_actor")
     val fileActor = actorSystem.actorOf(Props(new FileActor("/home/svgroz/examples.desktop")), "file_actor")
     fileActor ! ReadChunkRequest(requestId = UUID.randomUUID(), chunkSize = 200000)
+    fileActor ! "xxss"
   }
 }

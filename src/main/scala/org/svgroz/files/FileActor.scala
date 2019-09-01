@@ -7,6 +7,7 @@ import java.nio.file.{Paths, StandardOpenOption}
 
 import akka.actor.{Actor, ActorRef}
 import akka.event.Logging
+import org.svgroz.UnsupportedMessage
 
 class FileActor(fileName: String) extends Actor {
   private val log = Logging(context.system, this)
@@ -21,7 +22,14 @@ class FileActor(fileName: String) extends Actor {
     case readChunk: ReadChunk => handleReadChunk(readChunk)
     // TODO: something wrong? log or maybe fast fail?
     case readChunkError: ReadChunkError => handleReadChunkError(readChunkError)
-    case unsupported => log.error(s"Unsupported operation ($unsupported)")
+    case unsupported =>
+      val senderRef = sender()
+      if (senderRef == self) {
+        log.error("Unsupported message ({}) from itself", unsupported)
+      } else {
+        log.error("Unsupported message ({})", unsupported)
+        senderRef ! UnsupportedMessage(unsupported)
+      }
   }
 
   def readChunk(readChunkRequest: ReadChunkRequest): Unit = {
