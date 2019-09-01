@@ -1,7 +1,9 @@
 package org.svgroz
 
+import java.util.UUID
+
 import akka.actor.{Actor, ActorSystem, Props}
-import org.svgroz.files.{FileActor, ReadFile}
+import org.svgroz.files.{FileActor, ReadChunkRequest}
 
 class HelloWorldActor extends Actor {
   override def receive: Receive = {
@@ -15,6 +17,6 @@ object Datax {
     val actorSystem = ActorSystem("system")
     val helloWorldActor = actorSystem.actorOf(Props[HelloWorldActor], name = "hello_world_actor")
     val fileActor = actorSystem.actorOf(Props(new FileActor("/home/svgroz/examples.desktop")), "file_actor")
-    fileActor ! ReadFile
+    fileActor ! ReadChunkRequest(requestId = UUID.randomUUID(), chunkSize = 200000)
   }
 }
